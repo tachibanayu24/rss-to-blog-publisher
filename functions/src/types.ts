@@ -8,11 +8,19 @@ export type RSSArticleType = {
 };
 
 export type BlogArticleType = {
-  title: string;
-  content: string;
   slug: string;
+  uid: string;
   created: string;
   modified: string;
+  title: string;
+  description: string;
+  permalink: string;
   tags: string[];
-  uid: string;
+  draft: boolean;
+  content: string;
 };
+
+export type ArticleFileType = {
+  filename: string;
+  body: string;
+}

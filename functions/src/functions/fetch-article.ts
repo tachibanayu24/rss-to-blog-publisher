@@ -1,4 +1,4 @@
-import {TARGET_FEEDS, DURATION_MINUTES} from "../config";
+import {TARGET_FEEDS, DURATION_MINUTES} from "../config/constants";
 import {Readability} from "@mozilla/readability";
 import Parser from "rss-parser";
 import * as JSDOM from "jsdom";

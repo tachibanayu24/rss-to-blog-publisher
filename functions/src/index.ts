@@ -1,8 +1,9 @@
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
 import {fetchArticle} from "./functions/fetch-article";
-import {TARGET_FEEDS, DURATION_MINUTES} from "./config";
+import {TARGET_FEEDS, DURATION_MINUTES} from "./config/constants";
 import {generateArticleFlow} from "./functions/generate-article";
+import {composeObsidianArticle} from "./functions/compose-obsidian-article";
 
 exports.rssToBlogPublisher = onSchedule(`every ${DURATION_MINUTES} minutes`, async (_event) => {
   logger.info("fetching articles");
@@ -16,6 +17,10 @@ exports.rssToBlogPublisher = onSchedule(`every ${DURATION_MINUTES} minutes`, asy
 
   const blogArticle = await generateArticleFlow(articles);
   logger.info(blogArticle);
+
+  const obsidianArticle = composeObsidianArticle(blogArticle);
+  logger.info(obsidianArticle);
+
   return;
 });
 
