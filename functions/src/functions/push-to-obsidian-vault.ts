@@ -9,19 +9,24 @@ import {ArticleFileType} from "../types";
  * @param article { filename: string, body: string } 形式の記事データ
  * @throws Error GitHubへのPushに失敗した場合
  */
-export const pushToObsidianVault = async (article: ArticleFileType): Promise<void> => {
+export const pushToObsidianVault = async (
+  article: ArticleFileType,
+  githubToken: string,
+  githubRepoOwner: string,
+  githubRepoName: string
+): Promise<void> => {
   const {Octokit} = await import("@octokit/rest");
   const {filename, body} = article;
 
-  const octokit = new Octokit({auth: process.env.GITHUB_TOKEN});
+  const octokit = new Octokit({auth: githubToken});
 
   if (!octokit) {
     logger.error("Octokit client is not initialized. Cannot push to GitHub. Check GITHUB_TOKEN.");
     throw new Error("GitHub client is not initialized. Missing GITHUB_TOKEN.");
   }
 
-  const owner = process.env.GITHUB_REPO_OWNER;
-  const repo = process.env.GITHUB_REPO_NAME;
+  const owner = githubRepoOwner;
+  const repo = githubRepoName;
 
   if (!owner || !repo) {
     throw new Error("GitHub repository configuration is missing.");

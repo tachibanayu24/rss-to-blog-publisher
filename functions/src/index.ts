@@ -2,7 +2,7 @@ import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
 import {fetchArticle} from "./functions/fetch-article";
 import {TARGET_FEEDS, DURATION_MINUTES} from "./config/constants";
-import {generateArticleFlow} from "./functions/generate-article";
+import {generateArticle} from "./functions/generate-article";
 import {composeObsidianArticle} from "./functions/compose-obsidian-article";
 import {pushToObsidianVault} from "./functions/push-to-obsidian-vault";
 import {defineSecret} from "firebase-functions/params";
@@ -18,6 +18,11 @@ exports.rssToBlogPublisher = onSchedule({
   timeZone: "Asia/Tokyo",
   secrets: [GEMINI_API_KEY, GITHUB_TOKEN, GITHUB_REPO_OWNER, GITHUB_REPO_NAME],
 }, async () => {
+  const GEMINI_API_KEY_VALUE = GEMINI_API_KEY.value();
+  const GITHUB_TOKEN_VALUE = GITHUB_TOKEN.value();
+  const GITHUB_REPO_OWNER_VALUE = GITHUB_REPO_OWNER.value();
+  const GITHUB_REPO_NAME_VALUE = GITHUB_REPO_NAME.value();
+
   logger.info("fetching articles");
   const articles = await fetchArticle(TARGET_FEEDS);
   logger.info(`fetched ${articles.length} articles`);
@@ -27,13 +32,13 @@ exports.rssToBlogPublisher = onSchedule({
     return;
   }
 
-  const blogArticle = await generateArticleFlow(articles);
+  const blogArticle = await generateArticle(articles, GEMINI_API_KEY_VALUE);
   logger.info(blogArticle);
 
   const obsidianArticle = composeObsidianArticle(blogArticle);
   logger.info(obsidianArticle);
 
-  await pushToObsidianVault(obsidianArticle);
+  await pushToObsidianVault(obsidianArticle, GITHUB_TOKEN_VALUE, GITHUB_REPO_OWNER_VALUE, GITHUB_REPO_NAME_VALUE);
   return;
 });
 

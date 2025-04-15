@@ -1,11 +1,7 @@
 import googleAI, {gemini25ProExp0325} from "@genkit-ai/googleai";
-import {genkit, z} from "genkit";
+import {Genkit, genkit, z} from "genkit";
 import {articleExamples} from "../config/article-examples";
-
-const ai = genkit({
-  plugins: [googleAI({apiKey: process.env.GEMINI_API_KEY})],
-  model: gemini25ProExp0325,
-});
+import {RSSArticleType} from "../types";
 
 const inputSchema = z.array(z.object({
   feedTitle: z.string(),
@@ -56,7 +52,7 @@ ${example.content}
 `).join("\n\n")}
 `;
 
-export const generateArticleFlow = ai.defineFlow({
+const generateArticleFlow = (ai: Genkit) => ai.defineFlow({
   name: "generate-article",
   inputSchema,
   outputSchema,
@@ -101,3 +97,12 @@ ${rssArticles.join("\n\n")}
 
   return output;
 });
+
+export const generateArticle = async (articles: RSSArticleType[], geminiApiKey: string) => {
+  const ai = genkit({
+    plugins: [googleAI({apiKey: geminiApiKey})],
+    model: gemini25ProExp0325,
+  });
+
+  return generateArticleFlow(ai)(articles);
+};

@@ -17,7 +17,7 @@ export const composeObsidianArticle = (
 
   const permalink = "";
   const tags = ["自動生成記事", "LMM"];
-  const draft = true;
+  const draft = false;
 
   return {
     filename: `${slug}.md`,
