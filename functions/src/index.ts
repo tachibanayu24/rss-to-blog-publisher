@@ -4,6 +4,7 @@ import {fetchArticle} from "./functions/fetch-article";
 import {TARGET_FEEDS, DURATION_MINUTES} from "./config/constants";
 import {generateArticleFlow} from "./functions/generate-article";
 import {composeObsidianArticle} from "./functions/compose-obsidian-article";
+import {pushToObsidianVault} from "./functions/push-to-obsidian-vault";
 
 exports.rssToBlogPublisher = onSchedule(`every ${DURATION_MINUTES} minutes`, async (_event) => {
   logger.info("fetching articles");
@@ -21,6 +22,7 @@ exports.rssToBlogPublisher = onSchedule(`every ${DURATION_MINUTES} minutes`, asy
   const obsidianArticle = composeObsidianArticle(blogArticle);
   logger.info(obsidianArticle);
 
+  await pushToObsidianVault(obsidianArticle);
   return;
 });
 

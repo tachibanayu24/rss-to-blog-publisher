@@ -5,4 +5,4 @@ export const TARGET_FEEDS = [
   },
 ];
 
-export const DURATION_MINUTES = 60000;
+export const DURATION_MINUTES = 60;
