@@ -4,7 +4,7 @@ import {ArticleFileType} from "../types";
 
 /**
  * 記事を指定されたGitHubリポジトリの指定パスにpushする
- * pathは `_published/dev/${filename}`
+ * pathは `_published/news/${filename}`
  * commit messageは `[bot投稿🤖] ${filename}`
  * @param article { filename: string, body: string } 形式の記事データ
  * @throws Error GitHubへのPushに失敗した場合
@@ -32,7 +32,7 @@ export const pushToObsidianVault = async (
     throw new Error("GitHub repository configuration is missing.");
   }
 
-  const filePath = `_published/dev/${filename}`;
+  const filePath = `_published/news/${filename}`;
   const commitMessage = `[bot投稿🤖] ${filename}`;
 
   logger.info(`Attempting to push file to GitHub: ${owner}/${repo}/${filePath}`);
