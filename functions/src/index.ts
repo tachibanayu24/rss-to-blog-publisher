@@ -1,19 +1,23 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
-import {onRequest} from "firebase-functions/v2/https";
+import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
+import {fetchArticle} from "./functions/fetch-article";
+import {TARGET_FEEDS, DURATION_MINUTES} from "./config";
+import {generateArticleFlow} from "./functions/generate-article";
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
+exports.rssToBlogPublisher = onSchedule(`every ${DURATION_MINUTES} minutes`, async (_event) => {
+  logger.info("fetching articles");
+  const articles = await fetchArticle(TARGET_FEEDS);
+  logger.info(`fetched ${articles.length} articles`);
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+  if (articles.length === 0) {
+    logger.info("no articles found");
+    return;
+  }
+
+  const blogArticle = await generateArticleFlow(articles);
+  logger.info(blogArticle);
+  return;
+});
+
+
+// const TAGS = ["自動投稿", "LLM"];
