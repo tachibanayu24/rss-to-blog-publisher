@@ -6,12 +6,17 @@ export const composeObsidianArticle = (
 ): ArticleFileType => {
   const {title, content, slug} = blogArticle;
 
-  // YYYYMMDDHHmmss
-  const uid = (new Date()).toISOString().replace(/[-:Z]/g, "");
+  // 現在時刻を取得
+  const now = new Date();
 
-  // YYYY-MM-DD
-  const created = (new Date()).toISOString().split("T")[0];
-  const modified = (new Date()).toISOString().split("T")[0];
+  // YYYYMMDDHHmmss
+  const uid = now.toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d+Z$/, "");
+
+  // YYYY-MM-DD HH:mm:ss
+  const created = now.toISOString().replace(/T/, " ").replace(/\.\d+Z$/, "");
+  const modified = now.toISOString().replace(/T/, " ").replace(/\.\d+Z$/, "");
 
   const description = extractPlainText(content).replace(/\n/g, " ").slice(0, 200) + "...";
 
