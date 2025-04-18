@@ -12,6 +12,7 @@ export const composeObsidianArticle = (
   // YYYYMMDDHHmmss
   const uid = now.toISOString()
     .replace(/[-:]/g, "")
+    .replace("T", "")
     .replace(/\.\d+Z$/, "");
 
   // YYYY-MM-DD HH:mm:ss
@@ -30,8 +31,8 @@ export const composeObsidianArticle = (
 uid: ${uid}
 created: ${created}
 modified: ${modified}
-title: 【bot投稿🤖】${title}
-description: ${description}
+title: "【bot投稿🤖】${title}"
+description: "${description}"
 permalink: ${permalink}
 tags:
   - ${tags.join("\n  - ")}
