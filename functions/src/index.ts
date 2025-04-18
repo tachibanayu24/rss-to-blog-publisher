@@ -16,6 +16,7 @@ exports.rssToBlogPublisher = onSchedule({
   schedule: `every ${DURATION_MINUTES} minutes`,
   region: "asia-northeast1",
   timeZone: "Asia/Tokyo",
+  timeoutSeconds: 540,
   secrets: [GEMINI_API_KEY, GITHUB_TOKEN, GITHUB_REPO_OWNER, GITHUB_REPO_NAME],
 }, async () => {
   const GEMINI_API_KEY_VALUE = GEMINI_API_KEY.value();
@@ -23,12 +24,12 @@ exports.rssToBlogPublisher = onSchedule({
   const GITHUB_REPO_OWNER_VALUE = GITHUB_REPO_OWNER.value();
   const GITHUB_REPO_NAME_VALUE = GITHUB_REPO_NAME.value();
 
-  logger.info("fetching articles");
+  logger.info("記事を取得します");
   const articles = await fetchArticle(TARGET_FEEDS);
-  logger.info(`fetched ${articles.length} articles`);
+  logger.info(`${articles.length}件の記事を取得しました`);
 
   if (articles.length === 0) {
-    logger.info("no articles found");
+    logger.info("記事が見つかりませんでした");
     return;
   }
 
@@ -41,6 +42,3 @@ exports.rssToBlogPublisher = onSchedule({
   await pushToObsidianVault(obsidianArticle, GITHUB_TOKEN_VALUE, GITHUB_REPO_OWNER_VALUE, GITHUB_REPO_NAME_VALUE);
   return;
 });
-
-
-// const TAGS = ["自動投稿", "LLM"];
