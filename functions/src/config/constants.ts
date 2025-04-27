@@ -1,7 +1,8 @@
 export const TARGET_FEEDS = [
   {
-    url: "https://buttondown.com/ainews/rss",
-    title: "AI News ButtonDown",
+    url: "https://news.smol.ai/",
+    feedUrl: "https://news.smol.ai/rss.xml",
+    title: "AINews",
   },
 ];
 

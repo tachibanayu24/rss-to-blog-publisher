@@ -1,8 +1,8 @@
-import {TARGET_FEEDS, DURATION_MINUTES} from "../config/constants";
-import {Readability} from "@mozilla/readability";
+import { TARGET_FEEDS, DURATION_MINUTES } from "../config/constants";
+import { Readability } from "@mozilla/readability";
 import Parser from "rss-parser";
 import * as JSDOM from "jsdom";
-import {RSSArticleType} from "../types";
+import { RSSArticleType } from "../types";
 
 /**
  * 1. target-feedのすべてのRSSをみて、最新の記事のURLを得る
@@ -10,7 +10,9 @@ import {RSSArticleType} from "../types";
  * 3. 記事の内容を返す
  * @param targetFeeds 取得対象のRSSフィード
  */
-export const fetchArticle = async (targetFeeds: typeof TARGET_FEEDS): Promise<RSSArticleType[]> => {
+export const fetchArticle = async (
+  targetFeeds: typeof TARGET_FEEDS
+): Promise<RSSArticleType[]> => {
   try {
     // RSSパーサーの初期化
     const parser = new Parser();
@@ -19,7 +21,7 @@ export const fetchArticle = async (targetFeeds: typeof TARGET_FEEDS): Promise<RS
     // 各フィードを処理
     for (const feed of targetFeeds) {
       // RSSフィードを解析
-      const feedContent = await parser.parseURL(feed.url);
+      const feedContent = await parser.parseURL(feed.feedUrl);
 
       // 公開から15分以内の最新の記事を取得する
       // 存在しない場合は空の配列を返す
@@ -65,7 +67,10 @@ export const fetchArticle = async (targetFeeds: typeof TARGET_FEEDS): Promise<RS
                 content: article.content || "",
                 excerpt: article.excerpt || "",
                 url: latestArticle.link,
-                publishedDate: latestArticle.pubDate || latestArticle.isoDate || new Date().toISOString(),
+                publishedDate:
+                  latestArticle.pubDate ||
+                  latestArticle.isoDate ||
+                  new Date().toISOString(),
               });
             }
           }
