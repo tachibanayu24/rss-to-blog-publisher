@@ -1,6 +1,6 @@
 {
-  "cSpell.words": [
-    "genkit",
-    "googleai"
-  ]
+  "editor.formatOnSave": false,
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+  "cSpell.words": ["genkit", "googleai"]
 }

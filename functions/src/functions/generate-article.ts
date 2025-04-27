@@ -43,9 +43,7 @@ const systemPrompt = `
 
 具体的な例として、口調や情報のまとめ方、記事の書き方は以下の事例を参考にしてください。
 ---
-${articleExamples
-  .map(
-    (example, i) => `
+${articleExamples.map((example, i) => `
 # 例${i + 1}
 **slug**
 ${example.slug}
@@ -57,7 +55,7 @@ ${example.title}
 ${example.content}
 `
   )
-  .join("\n\n")}
+    .join("\n\n")}
 `;
 
 const generateArticleFlow = (ai: Genkit) =>

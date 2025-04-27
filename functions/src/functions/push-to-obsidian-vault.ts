@@ -1,6 +1,5 @@
-import {logger} from "firebase-functions/v2";
-import {ArticleFileType} from "../types";
-
+import { logger } from "firebase-functions/v2";
+import { ArticleFileType } from "../types";
 
 /**
  * 記事を指定されたGitHubリポジトリの指定パスにpushする
@@ -15,13 +14,15 @@ export const pushToObsidianVault = async (
   githubRepoOwner: string,
   githubRepoName: string
 ): Promise<void> => {
-  const {Octokit} = await import("@octokit/rest");
-  const {filename, body} = article;
+  const { Octokit } = await import("@octokit/rest");
+  const { filename, body } = article;
 
-  const octokit = new Octokit({auth: githubToken});
+  const octokit = new Octokit({ auth: githubToken });
 
   if (!octokit) {
-    logger.error("Octokit client is not initialized. Cannot push to GitHub. Check GITHUB_TOKEN.");
+    logger.error(
+      "Octokit client is not initialized. Cannot push to GitHub. Check GITHUB_TOKEN."
+    );
     throw new Error("GitHub client is not initialized. Missing GITHUB_TOKEN.");
   }
 
@@ -35,7 +36,9 @@ export const pushToObsidianVault = async (
   const filePath = `_published/news/${filename}`;
   const commitMessage = `[bot投稿🤖] ${filename}`;
 
-  logger.info(`Attempting to push file to GitHub: ${owner}/${repo}/${filePath}`);
+  logger.info(
+    `Attempting to push file to GitHub: ${owner}/${repo}/${filePath}`
+  );
 
   try {
     const contentEncoded = Buffer.from(body, "utf-8").toString("base64");
@@ -50,9 +53,14 @@ export const pushToObsidianVault = async (
       branch: "main",
     });
 
-    logger.info(`Successfully pushed file to GitHub. Commit SHA: ${response.data.commit.sha}`, {path: filePath});
+    logger.info(
+      `Successfully pushed file to GitHub. Commit SHA: ${response.data.commit.sha}`,
+      { path: filePath }
+    );
   } catch (error) {
-    logger.error(`Failed to push file "${filePath}" to GitHub repository ${owner}/${repo}`);
+    logger.error(
+      `Failed to push file "${filePath}" to GitHub repository ${owner}/${repo}`
+    );
     throw error;
   }
 };
