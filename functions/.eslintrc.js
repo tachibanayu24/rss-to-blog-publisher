@@ -28,6 +28,6 @@ module.exports = {
     indent: ["error", 2],
     "valid-jsdoc": 0,
     "max-len": ["error", 120],
-    "object-curly-spacing": ["error", 2],
+    "object-curly-spacing": "always",
   },
 };
