@@ -3,6 +3,15 @@ import { Readability } from "@mozilla/readability";
 import Parser from "rss-parser";
 import * as JSDOM from "jsdom";
 import { RSSArticleType } from "../types";
+import { logger } from "firebase-functions";
+
+// pubDateをUTCとしてパースし、失敗時は0を返す
+const parsePubDateAsUtc = (pubDate: string): number => {
+  const hasTz = /(?:Z|[+-]\d{2}:?\d{2}|GMT|UTC)/i.test(pubDate);
+  const dateStr = hasTz ? pubDate : `${pubDate} UTC`;
+  const t = Date.parse(dateStr);
+  return isNaN(t) ? 0 : t;
+};
 
 /**
  * 1. target-feedのすべてのRSSをみて、最新の記事のURLを得る
@@ -14,49 +23,37 @@ export const fetchArticle = async (
   targetFeeds: typeof TARGET_FEEDS
 ): Promise<RSSArticleType[]> => {
   try {
-    // RSSパーサーの初期化
     const parser = new Parser();
-    const articles = [];
+    const articles: RSSArticleType[] = [];
 
-    // 各フィードを処理
+    logger.info(new Date());
+
     for (const feed of targetFeeds) {
-      // RSSフィードを解析
       const feedContent = await parser.parseURL(feed.feedUrl);
+      logger.info(feedContent.items[0].pubDate);
 
-      // 公開から15分以内の最新の記事を取得する
-      // 存在しない場合は空の配列を返す
       if (feedContent.items && feedContent.items.length > 0) {
-        // 15分以内に公開された記事をフィルタリング
         const recentArticles = feedContent.items.filter((item) => {
-          // 公開日を取得
           const pubDate = item.pubDate || item.isoDate;
           if (!pubDate) return false;
 
-          // 現在時刻と公開時刻の差（ミリ秒）
-          const pubTime = new Date(pubDate).getTime();
-          const currentTime = new Date().getTime();
-          const diffMinutes = (currentTime - pubTime) / (1000 * 60);
+          const pubTime = parsePubDateAsUtc(pubDate);
+          if (!pubTime) return false;
 
-          // 15分以内に公開された記事を対象とする
+          const diffMinutes = (Date.now() - pubTime) / (1000 * 60);
           return diffMinutes <= DURATION_MINUTES;
         });
 
-        // 15分以内に公開された記事がある場合
         if (recentArticles.length > 0) {
-          // 最も新しい記事を取得
           const latestArticle = recentArticles[0];
 
-          // 記事のURLが存在する場合、内容を取得
           if (latestArticle.link) {
-            // 記事のHTMLを取得
             const response = await fetch(latestArticle.link);
             const html = await response.text();
 
-            // JSDOMでHTMLをパース
             const dom = new JSDOM.JSDOM(html);
             const document = dom.window.document;
 
-            // Readabilityで記事内容を抽出
             const reader = new Readability(document);
             const article = reader.parse();
 
