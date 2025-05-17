@@ -1,4 +1,4 @@
-import googleAI, { gemini25ProExp0325 } from "@genkit-ai/googleai";
+import googleAI, { gemini25ProPreview0325 } from "@genkit-ai/googleai";
 import { Genkit, genkit, z } from "genkit";
 import { articleExamples } from "../config/article-examples";
 import { RSSArticleType } from "../types";
@@ -114,7 +114,7 @@ export const generateArticle = async (
 ) => {
   const ai = genkit({
     plugins: [googleAI({ apiKey: geminiApiKey })],
-    model: gemini25ProExp0325,
+    model: gemini25ProPreview0325,
   });
 
   return generateArticleFlow(ai)(articles);
